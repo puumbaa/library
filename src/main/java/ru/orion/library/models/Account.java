@@ -9,7 +9,6 @@ import java.util.Set;
 
 @Data
 @Entity(name = "account")
-@Table(name = "account")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,8 +17,7 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-
+    @OneToMany(mappedBy = "account",fetch = FetchType.LAZY)
     private Set<Book> reservedBooksSet = new HashSet<>();
     @Column(name = "first_name")
     private String firstName;
