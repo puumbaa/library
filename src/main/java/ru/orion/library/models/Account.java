@@ -1,6 +1,7 @@
 package ru.orion.library.models;
 
 import lombok.*;
+import ru.orion.library.enums.AccountRole;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -30,7 +31,8 @@ public class Account {
     @Column(name = "password")
     private String password;
     @Column(name = "role")
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private AccountRole role;
     @Column(name = "status")
     private String status;
 }
