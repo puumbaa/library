@@ -1,5 +1,6 @@
 package ru.orion.library.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import ru.orion.library.enums.BookStatus;
 
@@ -30,8 +31,10 @@ public class Book {
     private String genre;
     @Column(name = "author")
     private String author;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name = "id", nullable = false)
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
+    @JoinColumn(name = "id", insertable = false, updatable = false)
     private Account account;
 }
 

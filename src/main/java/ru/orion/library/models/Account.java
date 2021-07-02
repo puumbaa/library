@@ -17,7 +17,7 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany(mappedBy = "account",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "account",fetch = FetchType.EAGER)
     private Set<Book> reservedBooksSet = new HashSet<>();
     @Column(name = "first_name")
     private String firstName;

@@ -11,20 +11,23 @@ import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
 
+@EnableWebMvc
 @Configuration
+
 @ComponentScan("ru.orion.library")
-@EnableJpaRepositories(basePackages = "ru.orion.library.repositories")
+@EnableJpaRepositories(basePackages =  "ru.orion.library.repositories")
 @EnableTransactionManagement
 public class JpaConfiguration {
     @Autowired
     private DataSource dataSource;
 
-    @Bean
+    @Bean(name = "entityManagerFactory")
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(){
         LocalContainerEntityManagerFactoryBean emf =
                 new LocalContainerEntityManagerFactoryBean();

@@ -28,17 +28,10 @@ public class Reservation {
 
     @AllArgsConstructor
     @NoArgsConstructor
-    @EqualsAndHashCode
-    @ToString
+    @Data
     public static class ReservationKey implements Serializable{
-        @Getter
-        @Setter
         private Long accountId;
-        @Getter
-        @Setter
-        private Long lobbyId;
-        @Getter
-        @Setter
+        private Long bookId;
         private boolean isActual;
     }
 }
