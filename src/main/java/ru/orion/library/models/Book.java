@@ -32,8 +32,9 @@ public class Book {
     @Column(name = "author")
     private String author;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+
     @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id", insertable = false, updatable = false)
     private Account account;
 }
