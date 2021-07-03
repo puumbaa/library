@@ -3,7 +3,6 @@ package ru.orion.library.models;
 import lombok.*;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
@@ -11,27 +10,24 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "reservation")
-@IdClass(Reservation.ReservationKey.class)
+
 public class Reservation {
     @Id
-    @Column(name = "account_id")
-    private Long accountId;
-    @Id
-    @Column(name = "book_id")
-    private Long bookId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "date_of_end")
     private LocalDate dateOfEnd;
-    @Id
+
     @Column(name = "is_actual")
     private boolean isActual;
 
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Data
-    public static class ReservationKey implements Serializable{
-        private Long accountId;
-        private Long bookId;
-        private boolean isActual;
-    }
+    @ManyToOne()
+    @JoinColumn(name = "account_id" , nullable = false)
+    private Account account;
+
+    @ManyToOne
+    @JoinColumn(name = "book_id",nullable = false)
+    private Book book;
 }

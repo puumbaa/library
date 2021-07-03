@@ -5,21 +5,21 @@ import ru.orion.library.enums.AccountRole;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity(name = "account")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = "reservedBooksSet")
+@EqualsAndHashCode(exclude = "reservationSet")
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany(mappedBy = "account",fetch = FetchType.EAGER)
-    private Set<Book> reservedBooksSet = new HashSet<>();
+    @OneToMany(mappedBy = "account",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    private List<Reservation> reservationList = new ArrayList<>();
     @Column(name = "first_name")
     private String firstName;
     @Column(name = "last_name")

@@ -5,6 +5,10 @@ import lombok.*;
 import ru.orion.library.enums.BookStatus;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity(name = "book")
@@ -13,6 +17,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @ToString
 public class Book {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,9 +38,7 @@ public class Book {
     private String author;
 
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id", insertable = false, updatable = false)
-    private Account account;
+    @OneToMany(mappedBy = "book",fetch = FetchType.EAGER)
+    private List<Reservation> reservationList = new ArrayList<>();
 }
 
