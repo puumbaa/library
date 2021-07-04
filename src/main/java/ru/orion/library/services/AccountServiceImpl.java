@@ -7,13 +7,27 @@ import ru.orion.library.models.Book;
 import ru.orion.library.models.Reservation;
 import ru.orion.library.repositories.ReservationRepository;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+
 
 @Service
-public class AccountServiceImpl implements AccountService{
+public class AccountServiceImpl implements AccountService {
 
     @Autowired
     ReservationRepository reservationRepository;
+    private static final Logger logger = Logger.getLogger(AccountServiceImpl.class.getName());
+    String loggerPath = "logger.log";
+
+    {
+        try {
+            logger.addHandler(new FileHandler(loggerPath, true));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void reserve(Account account, Book book, LocalDate dateOfEnd) {
@@ -23,10 +37,14 @@ public class AccountServiceImpl implements AccountService{
                 .dateOfEnd(dateOfEnd)
                 .isActual(true)
                 .build();
-
-       reservationRepository.save(newRes); //db
-       account.getReservationList().add(newRes); //oop
-       book.getReservationList().add(newRes);
+        //logger writing operation
+        logger.info("User: "
+                + account.getId()
+                + " reserved " + book.getId()
+                + " till data " + dateOfEnd);
+        reservationRepository.save(newRes); //db
+        account.getReservationList().add(newRes); //oop
+        book.getReservationList().add(newRes);
     }
 
 
@@ -34,6 +52,10 @@ public class AccountServiceImpl implements AccountService{
     public void cancelReservation(Account account, Book book) {
         for (Reservation res : account.getReservationList()) {
             if (res.getBook().getId().equals(book.getId())) {
+                //logger writing operation
+                logger.info("User: "
+                        + account.getId()
+                        + " cancelled reservation FOR:" + book.getId());
                 reservationRepository.updateActualById(res.getId());
                 account.getReservationList().remove(res);
                 book.getReservationList().remove(res);
@@ -43,9 +65,13 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public void extendReservation(Account account, Book book, LocalDate newDate) {
-        for (Reservation res: account.getReservationList()){
-            if (res.getBook().getId().equals(book.getId())){
-                reservationRepository.updateDateOfEndById(newDate,res.getId());
+        for (Reservation res : account.getReservationList()) {
+            if (res.getBook().getId().equals(book.getId())) {
+                logger.info("User: " + account.getId()
+                        + " Extended Book: " + book.getId()
+                        + " from " + res.getDateOfEnd()
+                        + " till " + newDate);
+                reservationRepository.updateDateOfEndById(newDate, res.getId());
                 res.setDateOfEnd(newDate);
             }
         }
