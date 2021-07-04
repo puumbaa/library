@@ -19,15 +19,21 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     ReservationRepository reservationRepository;
     private static final Logger logger = Logger.getLogger(AccountServiceImpl.class.getName());
-    String loggerPath = "logger.log";
+
+    FileHandler reservationHandler;
+    FileHandler extendingHandler;
+    FileHandler cancellingHandler;
 
     {
         try {
-            logger.addHandler(new FileHandler(loggerPath, true));
+            reservationHandler = new FileHandler("src/main/java/ru/orion/library/loggers/reservation.log", true);
+            extendingHandler = new FileHandler("src/main/java/ru/orion/library/loggers/extending.log", true);
+            cancellingHandler = new FileHandler("src/main/java/ru/orion/library/loggers/canceling.log", true);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
     @Override
     public void reserve(Account account, Book book, LocalDate dateOfEnd) {
@@ -38,6 +44,7 @@ public class AccountServiceImpl implements AccountService {
                 .isActual(true)
                 .build();
         //logger writing operation
+        logger.addHandler(reservationHandler);
         logger.info("User: "
                 + account.getId()
                 + " reserved " + book.getId()
@@ -53,6 +60,7 @@ public class AccountServiceImpl implements AccountService {
         for (Reservation res : account.getReservationList()) {
             if (res.getBook().getId().equals(book.getId())) {
                 //logger writing operation
+                logger.addHandler(cancellingHandler);
                 logger.info("User: "
                         + account.getId()
                         + " cancelled reservation FOR:" + book.getId());
@@ -67,6 +75,7 @@ public class AccountServiceImpl implements AccountService {
     public void extendReservation(Account account, Book book, LocalDate newDate) {
         for (Reservation res : account.getReservationList()) {
             if (res.getBook().getId().equals(book.getId())) {
+                logger.addHandler(extendingHandler);
                 logger.info("User: " + account.getId()
                         + " Extended Book: " + book.getId()
                         + " from " + res.getDateOfEnd()
