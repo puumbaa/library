@@ -1,14 +1,24 @@
 package ru.orion.library.services;
 
+import org.omg.PortableInterceptor.ACTIVE;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.orion.library.enums.AccountRole;
+import ru.orion.library.enums.AccountStatus;
+import ru.orion.library.forms.AccountForm;
 import ru.orion.library.models.Account;
 import ru.orion.library.models.Book;
 import ru.orion.library.models.Reservation;
+import ru.orion.library.repositories.AccountRepository;
 import ru.orion.library.repositories.ReservationRepository;
+import sun.security.util.Password;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
@@ -17,7 +27,13 @@ import java.util.logging.Logger;
 public class AccountServiceImpl implements AccountService {
 
     @Autowired
+    AccountRepository accountRepository;
+
+    @Autowired
     ReservationRepository reservationRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     private static final Logger logger = Logger.getLogger(AccountServiceImpl.class.getName());
 
     FileHandler reservationHandler;
@@ -64,7 +80,7 @@ public class AccountServiceImpl implements AccountService {
                 logger.info("User: "
                         + account.getId()
                         + " cancelled reservation FOR:" + book.getId());
-                reservationRepository.updateActualById(res.getId());
+                reservationRepository.delete(res);
                 account.getReservationList().remove(res);
                 book.getReservationList().remove(res);
             }
@@ -84,5 +100,30 @@ public class AccountServiceImpl implements AccountService {
                 res.setDateOfEnd(newDate);
             }
         }
+    }
+
+    @Override
+    public void singUp(AccountForm form) {
+        Account account = Account.builder()
+                .firstName(form.getFirstName())
+                .lastName(form.getLastName())
+                .dateOfBirth(form.getDateOfBirth())
+                .email(form.getEmail())
+                .hashPassword(passwordEncoder.encode(form.getPassword()))
+                .role(AccountRole.USER)
+                .status(AccountStatus.ACTIVE)
+                .build();
+
+        accountRepository.save(account);
+    }
+
+    @Override
+    public List<Account> findAll() {
+        return accountRepository.findAll();
+    }
+
+    @Override
+    public Optional<Account> findById(Long id) {
+        return accountRepository.findById(id);
     }
 }

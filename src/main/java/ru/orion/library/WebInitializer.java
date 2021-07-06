@@ -1,6 +1,7 @@
-package ru.orion.library.config;
+package ru.orion.library;
 
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import ru.orion.library.config.SpringConfig;
 import ru.orion.library.security.config.WebSecurityConfig;
 
 public class WebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {

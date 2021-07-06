@@ -24,7 +24,8 @@ public interface ReservationRepository extends JpaRepository<Reservation,Long> {
     void updateActualById(Long id);
 
 
-
+    @Override
+    void delete(Reservation reservation);
 
     @Transactional
     @Modifying
