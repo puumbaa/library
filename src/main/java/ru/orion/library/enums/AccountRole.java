@@ -1,3 +1,3 @@
 package ru.orion.library.enums;
 
-public enum AccountRole {ADMIN,USER}
+public enum AccountRole {ROLE_ADMIN,ROLE_USER}

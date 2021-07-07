@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.orion.library.enums.AccountRole;
 
 import java.util.List;
 
@@ -16,6 +17,6 @@ public class JwtTokenDto {
     private String type = "Bearer";
     private Long id;
     private String login;
-    private List<String> roles;
+    private AccountRole role;
 
 }

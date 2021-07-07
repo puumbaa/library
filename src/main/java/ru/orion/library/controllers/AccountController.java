@@ -2,6 +2,7 @@ package ru.orion.library.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.orion.library.forms.AccountForm;
 import ru.orion.library.models.Account;
@@ -19,6 +20,7 @@ public class AccountController {
     private AccountService accountService;
 
     @GetMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     public List<AccountDto> getAccounts(){
         return from(accountService.findAll());
     }

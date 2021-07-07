@@ -30,7 +30,7 @@ public class AccountServiceImpl implements AccountService {
                 .dateOfBirth(form.getDateOfBirth())
                 .login(form.getLogin())
                 .hashPassword(passwordEncoder.encode(form.getPassword()))
-                .role(AccountRole.USER)
+                .role(AccountRole.ROLE_USER)
                 .status(AccountStatus.ACTIVE)
                 .build();
 

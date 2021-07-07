@@ -9,7 +9,7 @@ import ru.orion.library.models.Token;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TokenDto {
-    private String value;
+    private String token;
 
     public static TokenDto from(Token token){
         return new TokenDto(token.getValue());

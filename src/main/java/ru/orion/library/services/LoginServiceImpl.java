@@ -9,6 +9,7 @@ import ru.orion.library.models.Account;
 import ru.orion.library.models.Token;
 import ru.orion.library.repositories.AccountRepository;
 import ru.orion.library.repositories.TokenRepository;
+import ru.orion.library.security.provider.JwtProvider;
 import ru.orion.library.transfer.TokenDto;
 
 import java.util.Optional;
@@ -25,6 +26,9 @@ public class LoginServiceImpl implements LoginService{
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private JwtProvider jwtProvider;
+
     @Override
     public TokenDto login(LoginForm form) {
         Optional<Account> accountCandidate = accountRepository.findByLogin(form.getLogin());
@@ -34,7 +38,8 @@ public class LoginServiceImpl implements LoginService{
             if (passwordEncoder.matches(form.getPassword(), account.getHashPassword())){
                 Token token = Token.builder()
                         .account(account)
-                        .value(RandomStringUtils.random(10,true,true)).build();
+                        .value(jwtProvider.generateJwtToken(form.getLogin()))
+                        .build();
                 tokenRepository.save(token);
                 return TokenDto.from(token);
             }

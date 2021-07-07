@@ -10,28 +10,24 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import ru.orion.library.security.details.UserDetailsServiceImpl;
-import ru.orion.library.security.filters.AuthTokenFilter;
-import ru.orion.library.security.filters.TokenAuthFilter;
-import ru.orion.library.security.utils.AuthEntryPointJwt;
+import ru.orion.library.security.filters.JwtFilter;
 
 
 @EnableWebSecurity
 @ComponentScan("ru.orion.library")
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    UserDetailsServiceImpl userDetailsService;
 
     @Autowired
-    private AuthEntryPointJwt unauthorizedHandler;
-
-    @Bean
-    public AuthTokenFilter authenticationJwtTokenFilter() {
-        return new AuthTokenFilter();
-    }
-
+    private UserDetailsService userDetailsService;
+    @Autowired
+    private JwtFilter jwtFilter;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Bean
     @Override
@@ -39,28 +35,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-
-/*    @Override
+    @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("admin")
-                .password("{noop}admin007")
-                .roles("USER");
-    }*/
+        auth
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder);
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .httpBasic().disable()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/books").permitAll()
-                .antMatchers("/login","/signUp").permitAll()
-                .antMatchers("/admin").hasRole("ADMIN");
+                .antMatchers("/books").hasRole("USER")
+                .antMatchers("/login","/signup").permitAll()
+                .antMatchers("/users").hasRole("ADMIN");
 
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         http.csrf().disable();
         http.cors().disable();
 

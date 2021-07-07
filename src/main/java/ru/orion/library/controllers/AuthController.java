@@ -7,24 +7,21 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import ru.orion.library.enums.AccountRole;
 import ru.orion.library.forms.AccountForm;
 import ru.orion.library.forms.LoginForm;
 import ru.orion.library.models.Account;
 import ru.orion.library.repositories.AccountRepository;
 import ru.orion.library.security.details.UserDetailsImpl;
 import ru.orion.library.security.provider.JwtProvider;
-import ru.orion.library.security.utils.JwtUtils;
 import ru.orion.library.services.AccountService;
 import ru.orion.library.transfer.JwtTokenDto;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -49,10 +46,8 @@ public class AuthController {
     @Autowired               //TODO ПЕРЕНЕСТИ НА УРОВЕНЬ СЕРВИСОВ
     private AccountRepository accountRepository;
 
-
     @Autowired
-    private JwtUtils jwtUtils;
-
+    private JwtProvider jwtProvider;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser( @RequestBody LoginForm form) {
@@ -61,19 +56,18 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(form.getLogin(), form.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+        String jwt = jwtProvider.generateJwtToken(userDetails.getUsername());
 
-        return ResponseEntity.ok(
-                JwtTokenDto.builder()
+        AccountRole roles = (AccountRole) userDetails.getAuthorities().toArray()[0];
+
+        return ResponseEntity.ok(JwtTokenDto
+                .builder()
                 .token(jwt)
                 .id(userDetails.getAccount().getId())
                 .login(userDetails.getUsername())
-                .roles(roles));
+                .role(roles));
     }
 
 
@@ -84,18 +78,9 @@ public class AuthController {
                     .badRequest()
                     .body("Error: Username is already taken!");
         }
-/*
-        if (accountRepository.existsByEmail(form.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Email is already in use!"));
-        }*/
-
         // Create new user's account
        accountService.singUp(form);
        return ResponseEntity.ok("User registered successfully!");
-
-
 
 
        /* if (strRoles == null) {
