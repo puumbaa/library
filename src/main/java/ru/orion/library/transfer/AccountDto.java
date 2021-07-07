@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class AccountDto {
     private Long id;
-    private String email;
+    private String login;
 
 
     public static AccountDto from(Account account){
-        return new AccountDto(account.getId(),account.getEmail());
+        return new AccountDto(account.getId(),account.getLogin());
     }
 
     public static List<AccountDto> from(List<Account> accounts){

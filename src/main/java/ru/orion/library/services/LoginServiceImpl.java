@@ -3,7 +3,6 @@ package ru.orion.library.services;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.orion.library.forms.LoginForm;
 import ru.orion.library.models.Account;
@@ -28,7 +27,7 @@ public class LoginServiceImpl implements LoginService{
 
     @Override
     public TokenDto login(LoginForm form) {
-        Optional<Account> accountCandidate = accountRepository.findByEmail(form.getEmail());
+        Optional<Account> accountCandidate = accountRepository.findByLogin(form.getLogin());
         if (accountCandidate.isPresent()){
             Account account = accountCandidate.get();
 

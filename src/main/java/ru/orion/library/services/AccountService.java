@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface AccountService {
     void singUp(AccountForm form);
+    Optional<Account> findByLogin(String login);
+    Optional<Account> findByLoginAndPassword(String login,String password);
     List<Account> findAll();
     Optional<Account> findById(Long id);
 }

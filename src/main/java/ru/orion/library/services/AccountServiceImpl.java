@@ -28,13 +28,26 @@ public class AccountServiceImpl implements AccountService {
                 .firstName(form.getFirstName())
                 .lastName(form.getLastName())
                 .dateOfBirth(form.getDateOfBirth())
-                .email(form.getEmail())
+                .login(form.getLogin())
                 .hashPassword(passwordEncoder.encode(form.getPassword()))
                 .role(AccountRole.USER)
                 .status(AccountStatus.ACTIVE)
                 .build();
 
         accountRepository.save(account);
+    }
+
+    @Override
+    public Optional<Account> findByLogin(String login) {
+        return accountRepository.findByLogin(login);
+    }
+
+    @Override
+    public Optional<Account> findByLoginAndPassword(String login, String password) {
+        Optional<Account> accountCandidate = findByLogin(login);
+        return  accountCandidate.isPresent() &&
+                passwordEncoder.matches(password,accountCandidate.get().getHashPassword()) ?
+                accountCandidate : Optional.empty();
     }
 
     @Override

@@ -31,6 +31,7 @@ public class SpringConfig implements WebMvcConfigurer {
     @Autowired
     Environment env;
 
+
     @Bean
     public InternalResourceViewResolver viewResolver() {
         InternalResourceViewResolver resolver = new InternalResourceViewResolver();

@@ -33,8 +33,8 @@ public class Account {
     @Column(name = "date_of_birth")
     @JsonSerialize(using = ToStringSerializer.class)
     private LocalDate dateOfBirth;
-    @Column(name = "email")
-    private String email;
+    @Column(name = "login")
+    private String login;
     @Column(name = "password")
     private String hashPassword;
     @Column(name = "role")

@@ -105,5 +105,13 @@
             <version>3.12.0</version>
         </dependency>
 
+        <!-- Для поддержки JWT - токенов -->
+        <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+
     </dependencies>
 </project>
