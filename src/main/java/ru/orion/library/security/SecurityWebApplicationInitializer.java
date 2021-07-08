@@ -1,4 +1,4 @@
-package ru.orion.library.security.config;
+package ru.orion.library.security;
 
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 
