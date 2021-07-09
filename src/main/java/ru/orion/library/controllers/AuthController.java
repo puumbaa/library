@@ -5,35 +5,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.orion.library.enums.AccountRole;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.orion.library.forms.AccountForm;
 import ru.orion.library.forms.LoginForm;
-import ru.orion.library.models.Account;
 import ru.orion.library.repositories.AccountRepository;
 import ru.orion.library.security.details.UserDetailsImpl;
 import ru.orion.library.security.provider.JwtProvider;
 import ru.orion.library.services.AccountService;
 import ru.orion.library.transfer.JwtTokenDto;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @RestController
+@EnableWebMvc
+@RequestMapping(produces = "application/json", headers = "Accept=*/*")
 public class AuthController {
 
-/*    @Autowired
-    private LoginService loginService;
-
-    @PostMapping("/login")
-    public ResponseEntity<TokenDto> login(@RequestBody LoginForm form){
-        return ResponseEntity.ok(loginService.login(form));
-    }*/
     @Autowired
     AuthenticationManager authenticationManager;
 
@@ -58,16 +49,12 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        String jwt = jwtProvider.generateJwtToken(userDetails.getUsername());
 
-        AccountRole roles = (AccountRole) userDetails.getAuthorities().toArray()[0];
-
-        return ResponseEntity.ok(JwtTokenDto
-                .builder()
-                .token(jwt)
-                .id(userDetails.getAccount().getId())
-                .login(userDetails.getUsername())
-                .role(roles));
+        return ResponseEntity.ok( new JwtTokenDto(
+                jwtProvider.generateJwtToken(userDetails.getUsername()),
+                userDetails.getAccount().getId(), userDetails.getUsername(),
+                userDetails.getAccount().getRole().name())
+        );
     }
 
 

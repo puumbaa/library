@@ -1,5 +1,7 @@
 package ru.orion.library.security.details;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,9 +11,11 @@ import ru.orion.library.models.Account;
 import java.util.Collection;
 import java.util.Collections;
 
+@Data
+@NoArgsConstructor
 public class UserDetailsImpl implements UserDetails {
 
-    private final Account account;
+    private Account account;
 
     public UserDetailsImpl(Account account) {
         this.account = account;

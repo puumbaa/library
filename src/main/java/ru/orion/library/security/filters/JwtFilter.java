@@ -1,5 +1,7 @@
 package ru.orion.library.security.filters;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 import static org.springframework.util.StringUtils.hasText;
+
+@EqualsAndHashCode(callSuper = true)
+@Data
 
 @Component
 @Log
@@ -50,7 +55,7 @@ public class JwtFilter extends GenericFilterBean {
 
     private String getTokenFromRequest(HttpServletRequest request) {
         String bearer = request.getHeader(AUTHORIZATION);
-        if (hasText(bearer) && bearer.startsWith("Bearer ")) {
+        if (hasText(bearer) && bearer.startsWith("Bearer")) {
             return bearer.substring(7);
         }
         return null;

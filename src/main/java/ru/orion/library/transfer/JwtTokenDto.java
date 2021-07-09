@@ -1,22 +1,19 @@
 package ru.orion.library.transfer;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import ru.orion.library.enums.AccountRole;
-
-import java.util.List;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class JwtTokenDto {
     private String token;
     private String type = "Bearer";
     private Long id;
     private String login;
-    private AccountRole role;
+    private String role;
 
+    public JwtTokenDto(String jwt, Long id, String login, String role) {
+        token = jwt;
+        this.id = id;
+        this.login = login;
+        this.role = role;
+    }
 }
