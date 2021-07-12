@@ -24,7 +24,7 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany(mappedBy = "account",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "account",fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST,CascadeType.REFRESH})
     private List<Reservation> reservationList = new ArrayList<>();
     @Column(name = "first_name")
     private String firstName;
@@ -44,8 +44,4 @@ public class Account {
     @Enumerated(value = EnumType.STRING)
     private AccountStatus status;
 
-    @OneToMany(mappedBy = "account")
-    @JsonIgnore
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Token> tokens;
 }

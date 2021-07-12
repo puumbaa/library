@@ -1,6 +1,7 @@
 package ru.orion.library.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.orion.library.enums.AccountRole;
@@ -8,6 +9,8 @@ import ru.orion.library.enums.AccountStatus;
 import ru.orion.library.forms.AccountForm;
 import ru.orion.library.models.Account;
 import ru.orion.library.repositories.AccountRepository;
+import ru.orion.library.security.details.UserDetailsImpl;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +38,11 @@ public class AccountServiceImpl implements AccountService {
                 .build();
 
         accountRepository.save(account);
+    }
+
+    @Override
+    public Account from(Authentication auth) {
+        return ((UserDetailsImpl)auth.getPrincipal()).getAccount();
     }
 
     @Override

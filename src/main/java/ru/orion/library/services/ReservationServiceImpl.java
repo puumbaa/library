@@ -2,13 +2,17 @@ package ru.orion.library.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.orion.library.enums.BookStatus;
 import ru.orion.library.models.Account;
 import ru.orion.library.models.Book;
 import ru.orion.library.models.Reservation;
+import ru.orion.library.repositories.AccountRepository;
+import ru.orion.library.repositories.BookRepository;
 import ru.orion.library.repositories.ReservationRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
@@ -17,6 +21,10 @@ public class ReservationServiceImpl implements ReservationService{
 
     @Autowired
     private ReservationRepository reservationRepository;
+    @Autowired
+    private BookRepository bookRepository;
+    @Autowired
+    private AccountRepository accountRepository;
 
     private static final Logger logger = Logger.getLogger(AccountServiceImpl.class.getName());
 
@@ -35,53 +43,62 @@ public class ReservationServiceImpl implements ReservationService{
     }
 
     @Override
-    public void reserve(Account account, Book book, LocalDate dateOfEnd) {
-        Reservation newRes = Reservation.builder()
-                .account(account)
-                .book(book)
-                .dateOfEnd(dateOfEnd)
-                .isActual(true)
-                .build();
-        //logger writing operation
-        logger.addHandler(reservationHandler);
-        logger.info("User: "
-                + account.getId()
-                + " reserved " + book.getId()
-                + " till data " + dateOfEnd);
-        reservationRepository.save(newRes); //db
-        account.getReservationList().add(newRes); //oop
-        book.getReservationList().add(newRes);
-    }
-
-
-    @Override
-    public void cancelReservation(Account account, Book book) {
-        for (Reservation res : account.getReservationList()) {
-            if (res.getBook().getId().equals(book.getId())) {
-                //logger writing operation
-                logger.addHandler(cancellingHandler);
-                logger.info("User: "
-                        + account.getId()
-                        + " cancelled reservation FOR:" + book.getId());
-                reservationRepository.delete(res);
-                account.getReservationList().remove(res);
-                book.getReservationList().remove(res);
-            }
-        }
+    public Optional<Reservation> findByAccountIdAndBookId(Long accId, Long bookId) {
+        return reservationRepository.findByAccountIdAndBookId(accId,bookId);
     }
 
     @Override
-    public void extendReservation(Account account, Book book, LocalDate newDate) {
-        for (Reservation res : account.getReservationList()) {
-            if (res.getBook().getId().equals(book.getId())) {
-                logger.addHandler(extendingHandler);
-                logger.info("User: " + account.getId()
-                        + " Extended Book: " + book.getId()
-                        + " from " + res.getDateOfEnd()
-                        + " till " + newDate);
-                reservationRepository.updateDateOfEndById(newDate, res.getId());
-                res.setDateOfEnd(newDate);
+    public boolean updateDateOfEnd(Long accId, Long bookId, int cntOfDays) {
+        Optional<Reservation> reservationCandidate = reservationRepository.findByAccountIdAndBookId(accId,bookId);
+        if (reservationCandidate.isPresent()){
+            Reservation reservation = reservationCandidate.get();
+            reservation.setDateOfEnd(reservation.getDateOfEnd().plusDays(cntOfDays));
+            reservationRepository.save(reservation);
+            return true;
+        } return false;
+    }
+
+    @Override
+    public boolean save(Account account, Long bookId) {
+        Optional<Book> bookCandidate = bookRepository.findById(bookId);
+        if (bookCandidate.isPresent()){
+
+            Book book = bookCandidate.get();
+            if (reservationRepository.existsByBookId(bookId)) return false;
+//            if (date.equals(LocalDate.now())) date = LocalDate.now().plusDays(7);
+
+            Reservation reservation = Reservation.builder()
+                    .account(account)
+                    .book(book)
+                    .dateOfEnd(LocalDate.now().plusDays(7))
+                    .build();
+
+            book.setStatus(BookStatus.RESERVED);
+            bookRepository.save(book);
+
+            account.getReservationList().add(reservation);
+            accountRepository.save(account);
+            return true;
+
+        } return false;
+    }
+
+    @Override
+    public boolean cancel(Account account, Long bookId) {
+        Optional<Book> bookCandidate = bookRepository.findById(bookId);
+        if (bookCandidate.isPresent()){
+            Optional<Reservation> res = reservationRepository.findByAccountIdAndBookId(account.getId(), bookId);
+            if (res.isPresent()){
+                account.getReservationList().remove(res.get());
+                reservationRepository.save(res.get());
+
+                bookCandidate.get().setStatus(BookStatus.FREE);
+                bookCandidate.get().setReservation(null);
+                bookRepository.save(bookCandidate.get());
+
+                reservationRepository.delete(res.get());
+                return true;
             }
-        }
+        }throw new IllegalArgumentException("Reservation not found");
     }
 }

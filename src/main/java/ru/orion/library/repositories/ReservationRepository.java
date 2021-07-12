@@ -1,5 +1,6 @@
 package ru.orion.library.repositories;
 
+import com.sun.istack.internal.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,23 +14,21 @@ import ru.orion.library.models.Book;
 import ru.orion.library.models.Reservation;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation,Long> {
 
-    @Transactional
-    @Modifying
-    @Query(nativeQuery = true, value = "UPDATE reservation SET is_actual = false WHERE id = ?")
-    @ResponseStatus(HttpStatus.OK)
-    void updateActualById(Long id);
+    Optional<Reservation> findByAccountIdAndBookId(Long accId,Long bookId);
 
-
-    @Override
-    void delete(Reservation reservation);
+    boolean existsByBookId(Long bookId);
 
     @Transactional
     @Modifying
-    @Query(nativeQuery = true, value = "UPDATE reservation SET date_of_end = ? WHERE id = ?")
     @ResponseStatus(HttpStatus.OK)
-    void updateDateOfEndById(LocalDate newDate, Long id);
+    @Query( nativeQuery = true,
+            value = "UPDATE reservation SET date_of_end =:newDate WHERE account_id = :accId AND book_id =:bookId")
+    boolean updateDateOfEnd(@Param("accId") Long accId, @Param("bookId") Long bookId,@Param("newDate") LocalDate newDate);
+
+
 }

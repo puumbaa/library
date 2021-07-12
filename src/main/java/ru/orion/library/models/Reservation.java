@@ -1,8 +1,10 @@
 package ru.orion.library.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
@@ -10,24 +12,34 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "reservation")
-
 public class Reservation {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+
+    @EmbeddedId
+    private ReservationId reservationId = new ReservationId();
 
     @Column(name = "date_of_end")
     private LocalDate dateOfEnd;
 
-    @Column(name = "is_actual")
-    private boolean isActual;
-
     @ManyToOne()
+    @MapsId(value = "accountId")
     @JoinColumn(name = "account_id" , nullable = false)
     private Account account;
 
-    @ManyToOne
+    @OneToOne
+    @MapsId(value = "bookId")
     @JoinColumn(name = "book_id",nullable = false)
     private Book book;
+
+
+}
+
+@Embeddable
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
+class ReservationId implements Serializable {
+
+    private Long accountId;
+    private Long bookId;
 }
