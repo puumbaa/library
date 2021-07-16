@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface ReservationService {
     Optional<Reservation> findByAccountIdAndBookId(Long accId,Long bookId);
     boolean updateDateOfEnd(Long accId, Long bookId, int cntOfDays);
-    boolean save(Account account,Long bookId);
+    boolean save(Account account,Long bookId,String duration);
     boolean cancel(Account account, Long bookId);
 }

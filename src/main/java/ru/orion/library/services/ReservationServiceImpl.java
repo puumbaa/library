@@ -59,15 +59,16 @@ public class ReservationServiceImpl implements ReservationService{
     }
 
     @Override
-    public boolean save(Account account, Long bookId) {
+    public boolean save(Account account, Long bookId,String duration) {
         Optional<Book> bookCandidate = bookRepository.findById(bookId);
         if (bookCandidate.isPresent()){
-
             Book book = bookCandidate.get();
+
             if (reservationRepository.existsByBookId(bookId)) return false;
 
-            Reservation reservation = new Reservation(LocalDate.now().plusDays(7), account, book);
+            LocalDate parse = LocalDate.parse(duration);
 
+            Reservation reservation = new Reservation(parse, account, book);
 
             book.setStatus(BookStatus.RESERVED);
             bookRepository.save(book);
