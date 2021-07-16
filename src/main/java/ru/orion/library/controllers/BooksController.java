@@ -1,6 +1,7 @@
 package ru.orion.library.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.orion.library.enums.BookStatus;
@@ -16,10 +17,12 @@ public class BooksController {
     private BookRepository bookRepository;
 
     @GetMapping()
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public List<Book> getBooks(@RequestParam(required = false, name = "status")BookStatus status){
         if (status==null) return bookRepository.findAll();
         return bookRepository.findAllByStatus(status);
     }
+
 
 
 }

@@ -11,11 +11,12 @@ import java.util.List;
 import java.util.Set;
 
 @Data
-@Entity(name = "book")
+@Entity()
+@Table(name = "book")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@EqualsAndHashCode(exclude = "reservation")
 public class Book {
 
     @Id
@@ -38,7 +39,7 @@ public class Book {
     private String author;
 
 
-    @OneToMany(mappedBy = "book",fetch = FetchType.EAGER)
-    private List<Reservation> reservationList = new ArrayList<>();
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL)
+    private Reservation reservation;
 }
 
