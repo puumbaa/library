@@ -1,11 +1,8 @@
 package ru.orion.library.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.*;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import ru.orion.library.enums.AccountRole;
 import ru.orion.library.enums.AccountStatus;
 
@@ -15,7 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Entity(name = "account")
+@Entity()
+@Table(name = "account")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,7 +22,7 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany(mappedBy = "account",fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST,CascadeType.REFRESH})
+    @OneToMany(mappedBy = "account" ,fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Reservation> reservationList = new ArrayList<>();
     @Column(name = "first_name")
     private String firstName;

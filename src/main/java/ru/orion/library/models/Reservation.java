@@ -6,11 +6,10 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Data
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity(name = "reservation")
 public class Reservation {
 
@@ -22,23 +21,43 @@ public class Reservation {
 
     @ManyToOne()
     @MapsId(value = "accountId")
-    @JoinColumn(name = "account_id" , nullable = false)
+    @JoinColumn(name = "account_id")
     private Account account;
 
-    @OneToOne
+    @OneToOne()
     @MapsId(value = "bookId")
-    @JoinColumn(name = "book_id",nullable = false)
+    @JoinColumn(name = "book_id")
     private Book book;
 
 
+    public Reservation(LocalDate dateOfEnd, Account account, Book book) {
+        this.dateOfEnd = dateOfEnd;
+        this.account = account;
+        this.book = book;
+    }
 }
 
 @Embeddable
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
 class ReservationId implements Serializable {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReservationId that = (ReservationId) o;
+        return Objects.equals(accountId, that.accountId) && Objects.equals(bookId, that.bookId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(accountId, bookId);
+    }
+
+    public ReservationId(Long accountId, Long bookId) {
+        this.accountId = accountId;
+        this.bookId = bookId;
+    }
 
     private Long accountId;
     private Long bookId;

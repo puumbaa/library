@@ -65,13 +65,9 @@ public class ReservationServiceImpl implements ReservationService{
 
             Book book = bookCandidate.get();
             if (reservationRepository.existsByBookId(bookId)) return false;
-//            if (date.equals(LocalDate.now())) date = LocalDate.now().plusDays(7);
 
-            Reservation reservation = Reservation.builder()
-                    .account(account)
-                    .book(book)
-                    .dateOfEnd(LocalDate.now().plusDays(7))
-                    .build();
+            Reservation reservation = new Reservation(LocalDate.now().plusDays(7), account, book);
+
 
             book.setStatus(BookStatus.RESERVED);
             bookRepository.save(book);
@@ -90,15 +86,15 @@ public class ReservationServiceImpl implements ReservationService{
             Optional<Reservation> res = reservationRepository.findByAccountIdAndBookId(account.getId(), bookId);
             if (res.isPresent()){
                 account.getReservationList().remove(res.get());
-                reservationRepository.save(res.get());
+                accountRepository.save(account);
 
                 bookCandidate.get().setStatus(BookStatus.FREE);
                 bookCandidate.get().setReservation(null);
                 bookRepository.save(bookCandidate.get());
 
-                reservationRepository.delete(res.get());
+                reservationRepository.deleteByAccountIdAndBookId(account.getId(), bookId);
                 return true;
-            }
-        }throw new IllegalArgumentException("Reservation not found");
+            }throw new IllegalArgumentException("Reservation not exist");
+        }throw new IllegalArgumentException("Book not found");
     }
 }

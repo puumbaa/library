@@ -1,31 +1,17 @@
 package ru.orion.library.controllers;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.fasterxml.jackson.databind.util.JSONPObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import ru.orion.library.models.Account;
-import ru.orion.library.models.Reservation;
 import ru.orion.library.services.AccountService;
 import ru.orion.library.services.ReservationService;
-import sun.net.httpserver.HttpServerImpl;
 
-import javax.servlet.http.HttpServletRequest;
-import java.text.DateFormat;
-import java.time.LocalDate;
 import java.util.NoSuchElementException;
-import java.util.Optional;
-// eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0IiwiaWF0IjoxNjI1OTMxMDk1LCJleHAiOjE2MjYwMTc0OTV9.rFVi0m9RBjXeRrZaMR4b-khnxwDoqlZ5wfJFsC1b2-RLJah6Ldc87Mdo_fkQ-xmPobh7m4fmyvSn2tCCuP5d5g
+
 @RestController
 @RequestMapping("/reserve/{book_id}")
 public class ReservationController {
@@ -57,6 +43,7 @@ public class ReservationController {
     @PostMapping(value = "/select", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> reserve(@PathVariable(value = "book_id") Long bookId, Authentication auth)
     {
+
         Account account = accountService.from(auth);
         if (reservationService.save(account,bookId)) {
             return ResponseEntity.ok("The book is successfully reserved!");

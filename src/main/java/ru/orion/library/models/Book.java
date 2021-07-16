@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Set;
 
 @Data
-@Entity(name = "book")
+@Entity()
+@Table(name = "book")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
